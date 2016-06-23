@@ -13,6 +13,7 @@ fromChances dflt ((chance, val):rest) number = if number < chance
   then val
   else fromChances dflt rest $ number - chance
 
+tileFromInt :: Int -> Tile
 tileFromInt = fromChances defaultTile tileChances
 
 gridWidth = 4
@@ -147,7 +148,9 @@ randomElem list@(_:_) = randomRIO (0, length list - 1) >>=
 addTile :: Matrix (Maybe Tile) -> IO (Maybe (Matrix (Maybe Tile)))
 addTile grid = do
   maybeElem <- (randomElem . getEmptyCoords $ grid)
-  return $ fmap (\e -> setCartesian (Just defaultTile) e grid) maybeElem
+  randInt <- randomRIO (0, 100)
+  return $
+    fmap (\e -> setCartesian (Just . tileFromInt $ randInt) e grid) maybeElem
 
 maybe `orElse` dflt = case maybe of
   Nothing  -> dflt
