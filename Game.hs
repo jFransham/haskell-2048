@@ -54,7 +54,7 @@ applyTuple (f0, f1) = \(a0, a1) -> (f0 a0, f1 a1)
 
 -- Merges a grid to the left
 moveGrid :: Matrix (Maybe Tile) -> (Matrix (Maybe Tile), [Tile])
-moveGrid = applyTuple (fromLists, foldr1 (++)) . unzip . map moveRow . toLists
+moveGrid = applyTuple (fromLists, concat) . unzip . map moveRow . toLists
 
 pad elem n list = if length list < n
   then elem:pad elem (n - 1) list
@@ -104,14 +104,13 @@ applyBackwards :: [a -> a] -> (a -> a)
 applyBackwards = foldr1 (.) . reverse
 
 enumerate = zip [0..]
-flattenList = foldr1 (++)
 always x _ = x
 
 getEmptyCoords :: Matrix (Maybe a) -> [(Int, Int)]
 getEmptyCoords =
   catMaybes .
     map coordsIfNothing .
-    flattenList .
+    concat .
     map taggedListToListOfTags .
     enumerate .
     map enumerate .
